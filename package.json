@@ -1,0 +1,20 @@
+{
+  "name": "foundations",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./src/hw1_rr/DFA.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/vis": "^4.21.7",
+    "jquery": "^3.3.1",
+    "ts-loader": "^5.1.0"
+  },
+  "dependencies": {
+    "@types/jquery": "^3.3.6",
+    "vis": "^4.21.0"
+  }
+}
