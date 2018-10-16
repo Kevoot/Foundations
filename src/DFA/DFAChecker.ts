@@ -3,11 +3,11 @@ import { DFANode } from "./DFANode";
 import { DFANodeOperation } from "./DFANodeOperation";
 import * as vis from "vis";
 
-export let edgeList = [];
+export let DFAEdgeList = [];
 
 export function compareChar(str: string, char: string): boolean { if (str === char) return true; else return false; };
 
-export class main {
+export class DFAMain {
     public _startNode: DFANode;
     public _edges: vis.Edge[];
 
@@ -19,12 +19,8 @@ export class main {
         return this._startNode;
     }
 
-    public SetTrueState(node: DFANode): void {
-        this._startNode.SetTrueState(node);
-    }
-
-    public SetFalseState(node: DFANode): void {
-        this._startNode.SetFalseState(node);
+    public SetStartState(node: DFANode): void {
+        this._startNode = node;
     }
 }
 
@@ -33,37 +29,36 @@ export function clearDivs() {
     document.getElementById("outputAcceptState").innerHTML = "";
 }
 
-export function runNodes(str: string) {
+export function runDFANodes(str: string) {
     // We want a DFA which accepts a string, in this case strings starting with "abab"
     clearDivs();
-    edgeList = [];
+    DFAEdgeList = [];
 
-    let op_0, op_1, op_2, op_3, child_1, child_2, child_3;
+    let child_4: DFANode, child_1: DFANode, child_2: DFANode, child_3: DFANode;
     let operations = [];
 
-    op_0 = new DFANodeOperation(compareChar, "a");
-    op_1 = new DFANodeOperation(compareChar, "b");
-    op_2 = new DFANodeOperation(compareChar, "a");
-    op_3 = new DFANodeOperation(compareChar, "b");
+    let op_a = new DFANodeOperation(compareChar, "a");
+    let op_b = new DFANodeOperation(compareChar, "b");
 
     let start: DFANode, sink: DFANode;
-    let mainApp: main;
+    let mainApp: DFAMain;
     // the operation in a sink node doesn't matter; the string failed comparison.
-    sink = new DFANode(4, op_0, undefined, undefined);
-    sink.SetTrueState(sink);
-    sink.SetFalseState(sink);
+    sink = new DFANode(4, undefined, false, false);
+    sink.AddState({ next: sink, op: op_a });
 
-    child_3 = new DFANode(3, op_3, undefined, undefined, false, true);
+    child_3 = new DFANode(3, undefined, false, true);
     // If we are at the accepting state, the rest of the string is irrelevant. Loop on itself.
-    child_3.SetTrueState(child_3);
-    child_3.SetFalseState(child_3);
+    child_3.AddState({ next: sink, op: op_a });
+    child_3.AddState({ next: child_3, op: op_b });
 
-    child_2 = new DFANode(2, op_2, child_3, sink);
-    child_1 = new DFANode(1, op_1, child_2, sink);
+    child_2 = new DFANode(2, new Array({next: child_3, op: op_a}, {next: sink, op: op_b}), false, false);
 
-    start = new DFANode(0, op_0, child_1, sink, true, false);
+    child_1 = new DFANode(1, new Array({next: child_2, op: op_b}, {next: sink, op: op_a}), false, false);
 
-    mainApp = new main(start);
+    start = new DFANode(0, new Array({next: child_1, op: op_a}), true, false);
+    start.AddState({next: start, op: op_b});
+
+    mainApp = new DFAMain(start);
 
     document.getElementById("outputStatesTravelled").innerHTML = "Testing: " + str + "<br>";
     mainApp._startNode.MoveToNextState(str);
@@ -77,13 +72,13 @@ export function runNodes(str: string) {
     ]);
 
     // create an array with edges
-    var set = new vis.DataSet(edgeList);
+    var set = new vis.DataSet(DFAEdgeList);
 
     // create a network
     var container = document.getElementById('mynetwork');
     var data = {
         nodes: nodes,
-        edges: edgeList
+        edges: DFAEdgeList
     };
     let options: vis.Options = {
         edges: {
@@ -103,10 +98,9 @@ export function runNodes(str: string) {
     var network = new vis.Network(container, data, options);
 }
 
-$(document).on("click", "#submitButton", (e) => {
-    let str = (<HTMLInputElement>document.getElementById("inputString")).value;
-    runNodes(str);
-})
+export function clearEdges() {
+    DFAEdgeList = [];
+}
 
 window.onload = () => {
 

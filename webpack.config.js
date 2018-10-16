@@ -1,8 +1,8 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/hw1_rr/DFA.ts',
-  devtool: 'inline-source-map',
+  entry: './src/main.ts',
+  devtool: 'source-map',
   module: {
     rules: [
       {
